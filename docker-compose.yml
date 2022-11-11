@@ -1,0 +1,27 @@
+version: '3.5'
+services:
+### PHP-FPM ##############################################
+    php-fpm:
+      build:
+        context: ./php-fpm
+      volumes:
+        - ./php-fpm/php8.1.ini:/usr/local/etc/php/conf.d/php.ini
+        - ./php-fpm/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+        - .:/var/www/html
+      expose:
+        - "9000"
+
+### NGINX Server #########################################
+    nginx:
+      build:
+        context: ./nginx
+      volumes:
+        - ./nginx/logs:/var/log/nginx
+        - ./nginx/sites:/etc/nginx/sites-available
+        - ./nginx/ssl:/etc/nginx/ssl
+        - .:/var/www/html
+      ports:
+        - "80:80"
+        - "443:443"
+      depends_on:
+        - php-fpm
